@@ -21,8 +21,10 @@ var PolylineTextPath = {
 
     onRemove: function (map) {
         map = map || this._map;
-        if (map && this._textNode && map._renderer._container)
-            map._renderer._container.removeChild(this._textNode);
+        if (map && this._textNodes && this._textNodes.length && map._renderer._container)
+            for (i = 0; i < this._textNodes.length; i++) {
+                map._renderer._container.removeChild(this._textNodes[i]);
+            }
         __onRemove.call(this, map);
     },
 
@@ -39,15 +41,23 @@ var PolylineTextPath = {
     _textRedraw: function () {
         var text = this._text,
             options = this._textOptions;
-        if (text) {
-            this.setText(null).setText(text, options);
+        if (text && text.length) {
+            for (i = 0; i < text.length; i++) {
+                this.setText(text[i], options[i]);
+            };
         }
     },
 
     setText: function (text, options) {
-        this._text = text;
-        this._textOptions = options;
-
+        if (!this._text){
+            this._text  = [];
+            this._textOptions = [];
+            this._textNodes = [];
+        }
+        if (!this._text.includes(text) || !this._textOptions.includes(options)){
+            this._text.push(text);
+            this._textOptions.push(options);
+        }
         /* If not in SVG mode or Polyline not added to map yet return */
         /* setText will be called by onAdd, using value stored in this._text */
         if (!L.Browser.svg || typeof this._map === 'undefined') {
@@ -64,11 +74,15 @@ var PolylineTextPath = {
 
         /* If empty text, hide */
         if (!text) {
-            if (this._textNode && this._textNode.parentNode) {
-                this._map._renderer._container.removeChild(this._textNode);
-                
+            if (this._textNodes && this._textNodes.length) {
+                for (i = 0; i < this._textNodes.length; i++) {
+                    if(this._textNodes[i].parentNode) {
+                        this._map._renderer._container.removeChild(this._textNodes[i]);
+                    }
+                }
                 /* delete the node, so it will not be removed a 2nd time if the layer is later removed from the map */
-                delete this._textNode;
+                delete this._textNodes;
+                delete this._text;
             }
             return this;
         }
@@ -104,7 +118,10 @@ var PolylineTextPath = {
             textNode.setAttribute(attr, options.attributes[attr]);
         textPath.appendChild(document.createTextNode(text));
         textNode.appendChild(textPath);
-        this._textNode = textNode;
+
+        if (this._textNodes && !this._textNodes.includes(textNode)) {
+            this._textNodes.push(textNode);
+        }
 
         if (options.below) {
             svg.insertBefore(textNode, svg.firstChild);
