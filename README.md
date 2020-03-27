@@ -44,6 +44,7 @@ With a GeoJSON containing lines, it becomes:
 * `center` Centers the text according to the polyline's bounding box  (Default: `false`)
 * `below` Show text below the path (Default: false)
 * `offset` Set an offset to position text relative to the polyline (Default: 0)
+* `offsetX` Set an offset to position text in X axis (Default: 0)
 * `orientation` Rotate text.  (Default: 0)
     - {orientation: angle} - rotate to a specified angle (e.g. {orientation: 15})
     - {orientation: flip} - filps the text 180deg correction for upside down text placement on west -> east lines
