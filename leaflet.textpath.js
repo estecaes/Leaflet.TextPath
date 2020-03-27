@@ -137,6 +137,9 @@ var PolylineTextPath = {
             /* Set the position for the left side of the textNode */
             textNode.setAttribute('dx', ((pathLength / 2) - (textLength / 2)));
         }
+        if (options.offsetX){
+            textNode.setAttribute('dx', options.offsetX);
+        }
 
         /* Change label rotation (if required) */
         if (options.orientation) {
